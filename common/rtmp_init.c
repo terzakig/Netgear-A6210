@@ -103,7 +103,7 @@ NDIS_STATUS RTMPAllocAdapterBlock(void *handle, void **ppAdapter)
 #endif
 		}
 		pAd->BeaconBuf = pBeaconBuf;
-		DBGPRINT(RT_DEBUG_OFF, ("\n=== pAd = %p, size = %lu ===\n\n",
+		DBGPRINT(RT_DEBUG_OFF, ("\n=== pAd = %p, size = %zu ===\n\n",
 				pAd, sizeof(RTMP_ADAPTER)));
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
 	#pragma GCC diagnostic push

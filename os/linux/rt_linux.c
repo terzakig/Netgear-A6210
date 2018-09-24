@@ -31,6 +31,10 @@
 #define RTMP_MODULE_OS
 #define RTMP_MODULE_OS_UTIL
 
+//#include "compat_timer.h"
+
+#include <linux/timer.h>
+
 #include "rtmp_comm.h"
 #include "rt_os_util.h"
 #include "dot11i_wpa.h"
@@ -104,9 +108,10 @@ static inline void __RTMP_OS_Init_Timer(void *pReserved,
 	PVOID data)
 {
 	if (!timer_pending(pTimer)) {
-		init_timer(pTimer);
-		pTimer->data = (unsigned long)data;
-		pTimer->function = function;
+		//init_timer(pTimer);
+		timer_setup(pTimer, function, 0);
+        //pTimer->data = (unsigned long)data;
+		//pTimer->function = function;
 	}
 }
 

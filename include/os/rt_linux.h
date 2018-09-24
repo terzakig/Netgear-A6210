@@ -459,7 +459,8 @@ typedef struct tasklet_struct *POS_NET_TASK_STRUCT;
  **********************************************************************************/
 #define OS_HZ			HZ
 
-typedef void (*TIMER_FUNCTION)(unsigned long);
+//typedef void (*TIMER_FUNCTION)(unsigned long);
+typedef void (*TIMER_FUNCTION)(struct timer_list*);
 
 #define OS_WAIT(_time) \
 {	\

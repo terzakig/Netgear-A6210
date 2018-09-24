@@ -2,6 +2,7 @@
 *.o
 *.ko
 *.cmd
+*.mk
 os/linux/.tmp_versions/
 os/linux/Makefile
 os/linux/Module.symvers

@@ -120,6 +120,20 @@ static struct iw_priv_args privtab[] = {
 #endif // CONFIG_WEXT_PRIV
 
 /*
+ * mermcpy workaroun . TODO: See how to deal with this FORTIFY_SOURCE option properly...
+ * 
+ */
+void memcpy1(void* dest, void* source, int len)
+{
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        *((char*)(dest + i)) = *((char*)(source + i));
+    }
+}
+
+
+/*
 This is required for LinEX2004/kernel2.6.7 to provide iwlist scanning function
 */
 int rt_ioctl_giwname(struct net_device *dev, struct iw_request_info *info,
@@ -429,7 +443,7 @@ int rt_ioctl_siwap(struct net_device *dev, struct iw_request_info *info,
 	RTMP_STA_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_STA_SIOCSIWAP, 0,
 			(void *)(ap_addr->sa_data), 0, RtmpDevPrivFlagsGet(dev));
 
-	memcpy(Bssid, ap_addr->sa_data, MAC_ADDR_LEN);
+	memcpy1(Bssid, ap_addr->sa_data, MAC_ADDR_LEN);
 
 	DBGPRINT(RT_DEBUG_TRACE,
 			("IOCTL::SIOCSIWAP %02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -542,13 +556,13 @@ static int rt_ioctl_iwaplist(struct net_device *dev, struct iw_request_info *inf
 			break;
 		addr[i].sa_family = ARPHRD_ETHER;
 		pList = (pBssList->pList) + i;
-		memcpy(addr[i].sa_data, pList->Bssid, MAC_ADDR_LEN);
+		memcpy1(addr[i].sa_data, pList->Bssid, MAC_ADDR_LEN);
 		set_quality(pAd, &qual[i], pList); /*&pAd->ScanTab.BssEntry[i]); */
 	}
 	data->length = i;
-	memcpy(extra, &addr, i*sizeof(addr[0]));
+	memcpy1(extra, &addr, i*sizeof(addr[0]));
 	data->flags = 1;		/* signal quality present (sort of) */
-	memcpy(extra + i*sizeof(addr[0]), &qual, i*sizeof(qual[i]));
+	memcpy1(extra + i*sizeof(addr[0]), &qual, i*sizeof(qual[i]));
 
 	os_free_mem(addr);
 	os_free_mem(pBssList->pList);
@@ -650,7 +664,7 @@ int rt_ioctl_giwscan(struct net_device *dev, struct iw_request_info *info,
 		memset(&iwe, 0, sizeof(iwe));
 		iwe.cmd = SIOCGIWAP;
 		iwe.u.ap_addr.sa_family = ARPHRD_ETHER;
-				memcpy(iwe.u.ap_addr.sa_data, &pIoctlScan->pBssTable[i].Bssid, ETH_ALEN);
+				memcpy1(iwe.u.ap_addr.sa_data, &pIoctlScan->pBssTable[i].Bssid, ETH_ALEN);
 
 		previous_ev = current_ev;
 		current_ev = IWE_STREAM_ADD_EVENT(info, current_ev,end_buf, &iwe, IW_EV_ADDR_LEN);
@@ -904,7 +918,7 @@ int rt_ioctl_giwscan(struct net_device *dev, struct iw_request_info *info,
 		if (pIoctlScan->pBssTable[i].WpaIeLen > 0) {
 			memset(&iwe, 0, sizeof(iwe));
 			memset(&custom[0], 0, MAX_CUSTOM_LEN);
-			memcpy(custom, &(pIoctlScan->pBssTable[i].pWpaIe[0]),
+			memcpy1(custom, &(pIoctlScan->pBssTable[i].pWpaIe[0]),
 						   pIoctlScan->pBssTable[i].WpaIeLen);
 			iwe.cmd = IWEVGENIE;
 			iwe.u.data.length = pIoctlScan->pBssTable[i].WpaIeLen;
@@ -923,7 +937,7 @@ int rt_ioctl_giwscan(struct net_device *dev, struct iw_request_info *info,
 		if (pIoctlScan->pBssTable[i].RsnIeLen > 0) {
 			memset(&iwe, 0, sizeof(iwe));
 			memset(&custom[0], 0, MAX_CUSTOM_LEN);
-			memcpy(custom, &(pIoctlScan->pBssTable[i].pRsnIe[0]),
+			memcpy1(custom, &(pIoctlScan->pBssTable[i].pRsnIe[0]),
 						   pIoctlScan->pBssTable[i].RsnIeLen);
 			iwe.cmd = IWEVGENIE;
 			iwe.u.data.length = pIoctlScan->pBssTable[i].RsnIeLen;
@@ -942,7 +956,7 @@ int rt_ioctl_giwscan(struct net_device *dev, struct iw_request_info *info,
 		if (pIoctlScan->pBssTable[i].WpsIeLen > 0) {
 			memset(&iwe, 0, sizeof(iwe));
 			memset(&custom[0], 0, MAX_CUSTOM_LEN);
-			memcpy(custom, &(pIoctlScan->pBssTable[i].pWpsIe[0]),
+			memcpy1(custom, &(pIoctlScan->pBssTable[i].pWpsIe[0]),
 						   pIoctlScan->pBssTable[i].WpsIeLen);
 			iwe.cmd = IWEVGENIE;
 			iwe.u.data.length = pIoctlScan->pBssTable[i].WpsIeLen;
@@ -1728,7 +1742,7 @@ int rt_ioctl_giwencodeext(struct net_device *dev, struct iw_request_info *info,
 
 	if (ext->key_len && pIoctlSec->pData) {
 		encoding->flags |= IW_ENCODE_ENABLED;
-		memcpy(ext->key, pIoctlSec->pData, ext->key_len);
+		memcpy1(ext->key, pIoctlSec->pData, ext->key_len);
 	}
 
 	return 0;

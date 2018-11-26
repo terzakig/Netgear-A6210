@@ -6,9 +6,9 @@ ASUS USB-AC55, ASUS USB-N53 and EDUP EP-AC1601.
 
 To build the driver, follow these steps:
 
-    $ git clone https://github.com/jurobystricky/Netgear-A6210
+    $ git clone hhttps://github.com/terzakig/Netgear-A6210
     $ cd Netgear-A6210
-    $ make
+    $ sudo make
     $ sudo make install
 
 The driver is mostly tested on 64 bit Ubuntu 15.10 and Debian 8.3 with NETGEAR AC1200
